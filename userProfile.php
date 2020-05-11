@@ -44,7 +44,7 @@ require_once  'dbconnect.php';
 
             while( $arr = mysqli_fetch_assoc( $result)) {
 
-                echo "<a href='booksByGenre.php?genre=".urlencode($arr["genreName"])."'>".$arr["genreName"]."</a>";
+                echo "<a style='color:#000000 ' href='booksByGenre.php?genre=".urlencode($arr["genreName"])."'>".$arr["genreName"]."</a>";
                 echo "<br>";
             }
         }
@@ -148,18 +148,21 @@ require_once  'dbconnect.php';
         $query = "SELECT
 	tblBooks.*
 FROM
-	tblUserFavorites userFav
-INNER JOIN tblBooks on tblBooks.isbn = userFav.isbn
-WHERE userFav.id =".$_SESSION["userLogin"];
+	tblUserWishlist userWish
+INNER JOIN tblBooks on tblBooks.isbn = userWish.isbn
+WHERE userWish.id =".$_SESSION["userLogin"];
         if ( $result = mysqli_query($link, $query) ) {
-        ?>
-        <table border ="1">
+            if(mysqli_num_rows($result) != 0){
+                echo "        
+        <table border =\"1\">
             <thead>
             <th>Cover</th>
             <th>Title</th>
             <th>Price</th>
 
-            </thead>
+            </thead>";
+
+            ?>
             <tbody>
             <?php
             while( $arr = mysqli_fetch_assoc( $result)) {
@@ -170,10 +173,10 @@ WHERE userFav.id =".$_SESSION["userLogin"];
                 echo "</tr>";
             }
             }
+                echo "</tbody>
+                    </table>";
+            }
             ?>
-            </tbody>
-        </table>
-
     </div>
     <!-- end #mainContent -->
 
@@ -191,3 +194,6 @@ WHERE userFav.id =".$_SESSION["userLogin"];
 <!-- end #container -->
 </body>
 </html>
+<?php
+require_once  'dbdisconnect.php';
+?>

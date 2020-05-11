@@ -15,7 +15,10 @@ foreach($required as $field) {
 }
 // safe
 if ($error) {
-    header("Location: register.php?register=failed");
+    echo '<script type="text/javascript">';
+    echo ' alert("There was a problem logging in please try again")';  //not showing an alert box.
+    echo '</script>';
+    header("Location: index.php");
 } else {
     $values = "( ";
     foreach($required as $field) {

@@ -1,4 +1,6 @@
 <?php
+//header("Location: index.php");
+require_once 'checkLogin.php';
 require_once 'resources.php';
 require_once  'dbconnect.php';
 $queries = array();
@@ -45,7 +47,7 @@ parse_str($_SERVER['QUERY_STRING'], $queries);
 
             while( $arr = mysqli_fetch_assoc( $result)) {
 
-                echo "<a href='booksByGenre.php?genre=".urlencode($arr["genreName"])."'>".$arr["genreName"]."</a>";
+                echo "<a style='color:#000000 ' href='booksByGenre.php?genre=".urlencode($arr["genreName"])."'>".$arr["genreName"]."</a>";
                 echo "<br>";
             }
         }
@@ -57,35 +59,77 @@ parse_str($_SERVER['QUERY_STRING'], $queries);
     <!-- end #sidebar1 -->
 
     <!-- begin #sidebar2 -->
-    <div id="sidebar2">
-        <h3 class="xsmallText">Site Search</h3>
-        <p class="xxsmallText">Type your search criteria in the box below and click &quot;Search&quot;</p>
-        <form id="frmSearch" name="frmSearch" method="post" action="">
-            <label>
-                <input name="txtSearchSite" type="text" class="xsmallText" id="txtSearchSite" size="20" />
-            </label>
-            <label>
-                <input name="btnSearchSubmit" type="submit" class="xsmallText" id="btnSearchSubmit" value="&gt;" />
-            </label>
-        </form>
-        <br />
-        <hr />
-        <h3 class="xsmallText">Customer Login</h3>
-        <p class="xxsmallText">Before you can use our Web site, you need an account.
-            If you already have an account, login below. If not, click here.</p>
-        <form id="frmLogin" name="frmLogin" method="post" action="">
-            <p><span class="xsmallText">Username</span><br />
-                <input name="txtUsername" type="text" class="xsmallText" id="txtUsername" /></p>
-            <p><span class="xsmallText">Password</span><br />
-                <input name="txtPassword" type="password" class="xsmallText" id="txtPassword" /></p>
-        </form>
-        <hr />
-        <p class="smallText">
-            <a href="http://www.naxosaudiobooks.com/">
-                <img src="images/ads/naxosaudiobooks.gif" alt="Ad: Naxos Audiobooks" width="138" height="170" border="0" />
-            </a>
-        </p>
-    </div>
+    <?php
+    if (!isset($_SESSION["userLogin"])) {
+        ?>
+        <div id="sidebar2">
+            <h3><a href="index.php">Home</a></h3>
+            <h3 class="xsmallText">Site Search</h3>
+            <p class="xxsmallText">Type your search criteria in the box below and click &quot;Search&quot;</p>
+            <form id="frmSearch" name="frmSearch" method="post" action="">
+                <label>
+                    <input name="txtSearchSite" type="text" class="xsmallText" id="txtSearchSite" size="20" />
+                </label>
+                <label>
+                    <input name="btnSearchSubmit" type="submit" class="xsmallText" id="btnSearchSubmit" value="&gt;" />
+                </label>
+            </form>
+            <br />
+            <hr />
+            <h3 class="xsmallText">Customer Login</h3>
+            <p class="xxsmallText">Before you can use our Web site, you need an account.
+                If you already have an account, login below. If not, <a href="register.php">click here</a>.</p>
+            <form id="frmLogin" name="frmLogin" method="post" action="">
+                <p><span class="xsmallText">Username</span><br />
+                    <input name="txtUsername" type="text" class="xsmallText" id="txtUsername" /></p>
+                <p><span class="xsmallText">Password</span><br />
+                    <input name="txtPassword" type="password" class="xsmallText" id="txtPassword" /></p>
+            </form>
+            <hr />
+            <p class="smallText">
+                <a href="http://www.naxosaudiobooks.com/">
+                    <img src="images/ads/naxosaudiobooks.gif" alt="Ad: Naxos Audiobooks" width="138" height="170" border="0" />
+                </a>
+            </p>
+        </div>
+        <?php
+    } else {
+        $query = "SELECT * FROM tblUser WHERE id=".$_SESSION["userLogin"];
+        ?>
+        <div id="sidebar2">
+            <h3><a href="index.php">Home</a></h3>
+
+            <h3 class="xsmallText">Site Search</h3>
+            <p class="xxsmallText">Type your search criteria in the box below and click &quot;Search&quot;</p>
+            <form id="frmSearch" name="frmSearch" method="post" action="">
+                <label>
+                    <input name="txtSearchSite" type="text" class="xsmallText" id="txtSearchSite" size="20" />
+                </label>
+                <label>
+                    <input name="btnSearchSubmit" type="submit" class="xsmallText" id="btnSearchSubmit" value="&gt;" />
+                </label>
+            </form>
+            <br />
+            <hr />
+            <?php
+            if ( $result = mysqli_query($link, $query) ) {
+                $arr = mysqli_fetch_assoc( $result);
+                echo "<h3 class=\"xsmallText\">Welcome ".$arr["fName"]." ".$arr["lName"]."</h3>";
+                echo "<a href='userProfile.php'>User Profile</a>";
+                echo "<br>";
+                echo "<a href='logoutAction.php'>Logout</a>";
+            }
+            ?>
+            <hr />
+            <p class="smallText">
+                <a href="http://www.naxosaudiobooks.com/">
+                    <img src="images/ads/naxosaudiobooks.gif" alt="Ad: Naxos Audiobooks" width="138" height="170" border="0" />
+                </a>
+            </p>
+        </div>
+        <?php
+    }
+    ?>
     <!-- end #sidebar2 -->
 
     <!-- begin #mainContent -->
@@ -138,3 +182,6 @@ WHERE tblGenres.genreName = \"$genre\"";
 <!-- end #container -->
 </body>
 </html>
+<?php
+require_once  'dbdisconnect.php';
+?>
